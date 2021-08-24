@@ -5,11 +5,11 @@ import uvicorn
 from fastapi import Depends, FastAPI, Request
 from sqlalchemy.orm import Session
 
-from sql_app.database import SessionLocal, engine
-from sql_app.models import Base
-from sql_app.models import Package as Package_Model
-from sql_app.schema import Package as Package_Schema
-from utils import request_cran
+from .sql_app.database import SessionLocal, engine
+from .sql_app.models import Base
+from .sql_app.models import Package as Package_Model
+from .sql_app.schema import Package as Package_Schema
+from .utils import request_cran
 
 Base.metadata.create_all(bind=engine)
 
