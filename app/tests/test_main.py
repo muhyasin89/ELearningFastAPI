@@ -1,10 +1,8 @@
 import sys
 
-from fastapiproject.main import app
 from starlette.testclient import TestClient
 
-# app = FastAPI()
-
+from ..main import app
 
 client = TestClient(app)
 
