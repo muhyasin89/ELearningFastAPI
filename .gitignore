@@ -3,3 +3,6 @@ __pycache__/
 .pytest_cache
 
 ENV_FAST/
+
+.DS_Store
+*.tar.gz
