@@ -4,9 +4,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
+# ROOT_DIR = os.path.dirname(os.path.realpath(__file__)+'../../../db/')
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///{}.db".format(ROOT_DIR)
+DATABASE_DIR = os.path.join(os.path.dirname(__file__), "../../db")
+
+SQLALCHEMY_DATABASE_URL = "sqlite:///{}/sql_app.db".format(DATABASE_DIR)
 print(SQLALCHEMY_DATABASE_URL)
 # SQLALCHEMY_DATABASE_URL = os.getenv("SQLALCHEMY_DATABASE_URL")
 # SQLALCHEMY_DATABASE_URL = "sqlite:///sql_app.db"
