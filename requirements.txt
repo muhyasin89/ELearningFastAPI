@@ -6,3 +6,4 @@ pytest-flask
 starlette
 wget
 pandas
+requests
