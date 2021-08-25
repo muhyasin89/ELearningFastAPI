@@ -115,7 +115,7 @@ async def read_item(
     tmp_folder = "{}/tmp/".format(ROOT_DIR)
     to_destination = "{}/tmp/{}".format(ROOT_DIR, package_name)
     if not os.path.exists(to_destination):
-        os.mkdir()
+        os.mkdir(to_destination)
 
     if file.endswith("tar.gz"):
         try:
