@@ -3,17 +3,23 @@ from datetime import date
 from pydantic import BaseModel
 
 
-class Package(BaseModel):
-    id: int
+class PackageBase(BaseModel):
     package: str
     version: str
-    name: str
     imports: str
+    suggests: str
+    depends: str
     license: str
     MD5sum: str
     NeedsCompilation: bool
-    email: str
-    name: str
+
+
+class PackageCreate(PackageBase):
+    pass
+
+
+class Package(PackageBase):
+    id: int
 
     class Config:
         orm_mode = True

@@ -1,7 +1,7 @@
 import requests
 
 
-def request_cran():
+def request_cran(limit, insert):
     package = requests.get("https://cran.r-project.org/src/contrib/PACKAGES")
     list_package = package.text.split("\n\n")
 
@@ -18,4 +18,9 @@ def request_cran():
             else:
                 dict_default[list_dict[0]] = list_dict[1]
         result_list.append(dict_default)
-    return result_list
+
+    return {
+        "limit": limit,
+        "insert": insert,
+        "data": result_list[: (limit + 1)] if limit else result_list,
+    }

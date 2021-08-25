@@ -8,16 +8,20 @@ class Package(Base):
     __tablename__ = "packages"
 
     id = Column(Integer, primary_key=True, index=True)
-    package = Column(String, index=True)
-    version = Column(String, index=True)
-    imports = Column(String, index=True)
-    license = Column(String, index=True)
-    MD5sum = Column(String, index=True)
+    package = Column(String)
+    version = Column(String)
+    imports = Column(String)
+    suggests = Column(String)
+    depends = Column(String)
+    license = Column(String)
+    MD5sum = Column(String)
     NeedsCompilation = Column(Boolean, default=False)
-    email = Column(String, index=True)
-    name = Column(String, index=True)
 
     details = relationship("Detail", back_populates="packages", uselist=False)
+
+    package_authors = relationship(
+        "PackageAuthor", back_populates="packages", uselist=False
+    )
 
     def __repr__(self):
         return "<Package(package='%s', version='%s', license='%s')>" % (
@@ -27,17 +31,29 @@ class Package(Base):
         )
 
 
+class PackageAuthor(Base):
+    __tablename__ = "authors"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    email = Column(String)
+
+    packages_id = Column(Integer, ForeignKey("packages.id"))
+    packages = relationship(
+        "Package", back_populates="package_authors", uselist=False
+    )
+
+
 class Detail(Base):
     __tablename__ = "details"
 
     id = Column(Integer, primary_key=True, index=True)
-    date = Column(Date, index=True)
-    title = Column(String, index=True)
-    author = Column(String, index=True)
-    maintainer = Column(String, index=True)
-    depends = Column(String, index=True)
-    description = Column(String, index=True)
-    repository = Column(String, index=True)
+    date = Column(Date)
+    title = Column(String)
+    author = Column(String)
+    maintainer = Column(String)
+    depends = Column(String)
+    description = Column(String)
+    repository = Column(String)
 
     packages_id = Column(Integer, ForeignKey("packages.id"))
     packages = relationship("Package", back_populates="details", uselist=False)
