@@ -1,0 +1,8 @@
+fastapi
+
+uvicorn[standard]
+
+pytest-flask
+starlette
+wget
+pandas
