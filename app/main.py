@@ -1,8 +1,11 @@
 import json
 import os
-from typing import List
+import tarfile
+from typing import List, Optional
 
+import pandas as pd
 import uvicorn
+import wget
 from fastapi import Depends, FastAPI, Request
 from sqlalchemy import insert
 from sqlalchemy.orm import Session
@@ -43,23 +46,25 @@ async def read_root(request: Request, db: Session = Depends(get_db)):
     insert = insert if insert else False
     limit = int(limit) if limit else 0
 
+    result_file = "{}/tmp/result.json".format(ROOT_DIR)
     if reload:
         result = request_cran(limit, insert)
 
         # to make new file
-        if not os.path.exists("{}/tmp/".format(ROOT_DIR)):
-            os.mkdir("{}/tmp/".format(ROOT_DIR))
+        tmp_folder = "{}/tmp/".format(ROOT_DIR)
+        if not os.path.exists(tmp_folder):
+            os.mkdir(tmp_folder)
 
-        if not os.path.isfile("{}/tmp/result.json".format(ROOT_DIR)):
-            f = open("{}/tmp/result.json".format(ROOT_DIR), "a")
+        if not os.path.isfile(result_file):
+            f = open(result_file, "a")
             f.close()
 
-        with open("{}/tmp/result.json".format(ROOT_DIR), "w") as outfile:
+        with open(result_file, "w") as outfile:
             outfile.write(json.dumps(result))
 
-    elif os.path.isfile("{}/tmp/result.json".format(ROOT_DIR)):
+    elif os.path.isfile(result_file):
         f = open(
-            "{}/tmp/result.json".format(ROOT_DIR),
+            result_file,
         )
         result = f.read()
         result = json.loads(result)
@@ -88,9 +93,44 @@ async def read_root(request: Request, db: Session = Depends(get_db)):
 
 
 @app.get("/packages/", response_model=List[Package_Schema])
-def show_records(db: Session = Depends(get_db)):
+async def show_records(db: Session = Depends(get_db)):
     records = db.query(Package_Model).all()
     return records
+
+
+@app.get("/packages/{package_name}/{package_version}/")
+async def read_item(
+    package_name: str, package_version: str, q: Optional[str] = None
+):
+    file = "{}/tmp/{}_{}.tar.gz".format(ROOT_DIR, package_name, package_version)
+    message = "success"
+    if not os.path.exists(file):
+        wget.download(
+            "http://cran.rproject.org/src/contrib/{}_{}.tar.gz".format(
+                package_name, package_version
+            ),
+            ROOT_DIR + "/tmp",
+        )
+
+    tmp_folder = "{}/tmp/".format(ROOT_DIR)
+    to_destination = "{}/tmp/{}".format(ROOT_DIR, package_name)
+    if not os.path.exists(to_destination):
+        os.mkdir()
+
+    if file.endswith("tar.gz"):
+        try:
+            my_tar = tarfile.open(file)
+            my_tar.extract(file, to_destination)
+            my_tar.close()
+        except:
+            message = "file could not be opened successfully"
+
+    return {
+        "package_name": package_name,
+        "package_version": package_version,
+        "q": q if q else "",
+        "message": message,
+    }
 
 
 if __name__ == "__main__":
